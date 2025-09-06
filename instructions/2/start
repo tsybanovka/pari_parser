@@ -1,0 +1,12 @@
+Выход - 0
+
+timedelta_save - 1
+timedelta_parsing - 2
+step_save - 3
+step_parsing - 4
+load_time - 5
+load_time_step - 6
+load_time_min - 7
+load_time_max - 8
+
+Все данные в секундах
