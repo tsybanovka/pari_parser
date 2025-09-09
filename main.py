@@ -1,3 +1,5 @@
+import json
+
 from parsing import Parsing
 from threading import Event, Thread
 from excel.everyminutesave import save
@@ -6,12 +8,26 @@ import ctypes
 
 event = Event()
 
-timedelta_save_hash = 10  #3600
+with open("saves/parametrs.json", "r") as file:
+    values = json.loads(file.readline())
+
+timedelta_save_hash = values["timedelta_save_hash"] # 10
+
+timedelta_parsing = values["timedelta_parsing"] # 60
+
+step_save_hash = values["step_save_hash"] # 60
+
+step_parsing = values["step_parsing"] # 5
+load_time = values["load_time"] # 1
+load_time_step = values["load_time_step"] # 0.1
+load_time_min = values["load_time_min"] # 1
+load_time_max = values["load_time_max"] # 5
+
+filename = mp.Value(ctypes.c_char_p, values["filename"].encode("utf-8"))
+
 timedelta_save = mp.Value('d', timedelta_save_hash) # в секундах
 
-timedelta_parsing = 60  #1200
 
-step_save_hash = 60
 step_save = mp.Value('d', step_save_hash)
 
 step_parsing = 5
@@ -19,8 +35,6 @@ load_time = 1
 load_time_step = 0.1
 load_time_min = 1
 load_time_max = 5
-
-filename = mp.Value(ctypes.c_char_p, "results.xlsx".encode("utf-8"))
 
 chapters = ["timedelta_save", "timedelta_parsing", "step_save", "step_parsing", "load_time", "load_time_step", "load_time_min", "load_time_max"]
 
@@ -118,8 +132,12 @@ while action != "0":
             else:
                 print("Введите число")
 
+            input()
+
             choice = input("Введите интересующий вас раздел: ").replace(" ", "")
     elif action == "3":
+
+        print("Текущее значение:", filename.value.decode("utf-8"))
 
         print_intsruction("3/start")
 
@@ -129,7 +147,7 @@ while action != "0":
 
             if choice[-5:] != ".xlsx":
                 choice += ".xlsx"
-            
+
             filename.value = choice.encode("utf-8")
 
             print_intsruction("3/success")
@@ -145,3 +163,7 @@ while action != "0":
 print("Осталось чуть чуть...", f"Примерно {max((p.timedelta, p.step, 1))//60} мин. {max((p.timedelta, p.step, 1))%60} с")
 event.set()
 p.stop_parse()
+
+data = {"timedelta_save_hash":timedelta_save_hash, "timedelta_parsing":timedelta_parsing, "step_save_hash":step_save_hash, "step_parsing":step_parsing, "load_time":load_time, "load_time_step":load_time_step, "load_time_min":load_time_min, "load_time_max":load_time_max, "filename":filename.value.decode("utf-8")}
+with open("saves/parametrs.json", "w") as file:
+    file.write(json.dumps(data))
