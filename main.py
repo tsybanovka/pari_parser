@@ -20,7 +20,7 @@ load_time_step = 0.1
 load_time_min = 1
 load_time_max = 5
 
-filename = mp.Value(ctypes.c_char_p, "here.xlsx".encode("utf-8"))
+filename = mp.Value(ctypes.c_char_p, "results.xlsx".encode("utf-8"))
 
 chapters = ["timedelta_save", "timedelta_parsing", "step_save", "step_parsing", "load_time", "load_time_step", "load_time_min", "load_time_max"]
 
@@ -119,6 +119,23 @@ while action != "0":
                 print("Введите число")
 
             choice = input("Введите интересующий вас раздел: ").replace(" ", "")
+    elif action == "3":
+
+        print_intsruction("3/start")
+
+        choice = input("Введите название файла: ")
+
+        while choice != "0":
+
+            if choice[-5:] != ".xlsx":
+                choice += ".xlsx"
+            
+            filename.value = choice.encode("utf-8")
+
+            print_intsruction("3/success")
+
+            choice = input("Введите название файла: ")
+
     else:
         print("Неизвестная команда, выберите из списка предложенного выше")
 
