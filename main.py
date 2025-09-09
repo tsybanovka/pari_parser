@@ -2,10 +2,11 @@ from parsing import Parsing
 from threading import Event, Thread
 from excel.everyminutesave import save
 import multiprocessing as mp
+import ctypes
 
 event = Event()
 
-timedelta_save_hash = 60  #3600
+timedelta_save_hash = 10  #3600
 timedelta_save = mp.Value('d', timedelta_save_hash) # в секундах
 
 timedelta_parsing = 60  #1200
@@ -18,6 +19,8 @@ load_time = 1
 load_time_step = 0.1
 load_time_min = 1
 load_time_max = 5
+
+filename = mp.Value(ctypes.c_char_p, "here.xlsx".encode("utf-8"))
 
 chapters = ["timedelta_save", "timedelta_parsing", "step_save", "step_parsing", "load_time", "load_time_step", "load_time_min", "load_time_max"]
 
@@ -34,7 +37,7 @@ p.load_time_min = load_time_min
 p.load_time_max = load_time_max
 p.start_parse()
 
-Thread(target=save, args=[p, event, timedelta_save, step_save]).start()
+Thread(target=save, args=[p, event, timedelta_save, step_save, filename]).start()
 
 
 print_intsruction("instruciton.txt")
@@ -108,7 +111,7 @@ while action != "0":
             if choice.isdigit():
                 choice = int(choice)
                 if len(chapters) >= choice >= 1:
-                    print(chapters[choice-1])
+                    print(chapters[choice-1], ":", eval(chapters[choice-1]))
                     print_intsruction("2/"+chapters[choice-1])
                 else:
                     print("Неизвестное действие, выберите из списка предложенного выше")

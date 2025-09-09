@@ -3,6 +3,9 @@ import time, requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import pyautogui
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 
@@ -79,14 +82,18 @@ class Parser:      # Класс, использующий паттерн фаб�
                         self.driver.switch_to.window(self.driver.window_handles[0])
                     self.driver.get(url)
 
-                was = self.driver.page_source
-                time.sleep(self.load_time)
-                while was != self.driver.page_source:
+                if url != "https://pari.ru/results/volleyball":
+                    WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "event-view--z1_OP")))
+                else:
                     was = self.driver.page_source
                     time.sleep(self.load_time)
-
+                    while was != self.driver.page_source:
+                        was = self.driver.page_source
+                        time.sleep(self.load_time)
+                    self.driver = self.driver
                 # Получаем исходный HTML-код страницы
                 return self.driver.page_source
             except Exception as e:
                 print(f"Ошибка при получении HTML: {e}")
                 return None
+
